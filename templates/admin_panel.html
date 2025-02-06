@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giveaway Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Giveaway Admin Panel</h1>
+        <div id="adminLogin" class="form-group">
+            <label for="adminPassword">Admin Password:</label>
+            <input type="password" id="adminPassword" class="form-control">
+            <button onclick="loadStats()" class="btn">View Stats</button>
+        </div>
+        <div id="statsContainer" style="display: none;">
+            <div class="stats-box">
+                <h2>Giveaway Statistics</h2>
+                <div id="generalStats"></div>
+            </div>
+            <div class="viewers-list">
+                <h2>Viewers</h2>
+                <div id="viewersList"></div>
+            </div>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const giveawayId = {{ giveaway_id }};
+
+        async function loadStats() {
+            try {
+                const adminPassword = document.getElementById('adminPassword').value;
+
+                const response = await fetch(`/api/admin/stats/${giveawayId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ adminPassword })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('adminLogin').style.display = 'none';
+                    document.getElementById('statsContainer').style.display = 'block';
+
+                    // Display general stats
+                    document.getElementById('generalStats').innerHTML = `
+                        <div class="stat-item">
+                            <strong>Total Views:</strong> ${data.data.totalViews}
+                        </div>
+                        <div class="stat-item">
+                            <strong>Views Left:</strong> ${data.data.viewsLeft}
+                        </div>
+                        <div class="stat-item">
+                            <strong>View Limit:</strong> ${data.data.content.view_limit}
+                        </div>
+                    `;
+
+                    // Display viewers list
+                    const viewersList = data.data.viewers.map(viewer => `
+                        <div class="viewer-item">
+                            <div><strong>IP:</strong> ${viewer.ip_address}</div>
+                            <div><strong>Viewed At:</strong> ${new Date(viewer.viewed_at).toLocaleString()}</div>
+                            <div class="user-agent"><strong>Browser:</strong> ${viewer.user_agent}</div>
+                        </div>
+                    `).join('');
+
+                    document.getElementById('viewersList').innerHTML = viewersList || 'No viewers yet';
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <div class="error">Error: ${data.error}</div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="error">Error: ${error.message}</div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

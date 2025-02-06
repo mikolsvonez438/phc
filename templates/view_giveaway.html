@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Giveaway</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>View Giveaway</h1>
+        <div id="passwordForm">
+            <div class="form-group">
+                <label for="password">Enter Password:</label>
+                <input type="password" id="password" class="form-control">
+            </div>
+            <button onclick="viewContent()" class="btn">View Content</button>
+        </div>
+        <div id="content" style="display: none;">
+            <div id="contentText" class="content-box"></div>
+            <div id="viewsLeft" class="info-box"></div>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const giveawayId = {{ giveaway_id }};
+
+        async function viewContent() {
+            try {
+                const password = document.getElementById('password').value;
+
+                const response = await fetch(`/api/view_content/${giveawayId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Viewer-ID': localStorage.getItem('viewerId') || Date.now().toString()
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('passwordForm').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                    document.getElementById('contentText').innerHTML = data.data.content;
+                    document.getElementById('viewsLeft').innerHTML = `
+                        Remaining views: ${data.data.viewsLeft}
+                    `;
+                    localStorage.setItem('viewerId', Date.now().toString());
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <div class="error">Error: ${data.error}</div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="error">Error: ${error.message}</div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

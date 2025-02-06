@@ -1,0 +1,248 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f2f5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #1a73e8;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.btn {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #1557b0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.success {
+    background-color: #e6f4ea;
+    color: #137333;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.error {
+    background-color: #fce8e6;
+    color: #c5221f;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.warning {
+    background-color: #fef7e0;
+    color: #b06000;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+/* Stats and Admin Panel Styles */
+.stats-box {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.viewers-list {
+    margin-top: 30px;
+}
+
+.viewer-item {
+    background-color: #fff;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.viewer-item div {
+    margin: 5px 0;
+}
+
+.user-agent {
+    font-size: 0.9em;
+    color: #666;
+    word-break: break-all;
+}
+
+#shareLink {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #e6f4ea;
+    border-radius: 4px;
+}
+
+#shareLink input {
+    margin: 10px 0;
+}
+
+#shareLink button {
+    margin: 5px 0 15px 0;
+}
+
+.content-box {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+    margin: 20px 0;
+    white-space: pre-wrap;
+}
+
+.info-box {
+    background-color: #e7f3ff;
+    color: #1a73e8;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        padding: 10px;
+    }
+}
+
+/* Animation for success and error messages */
+.success, .error, .warning {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Copy button styles */
+.copy-btn {
+    background-color: #34a853;
+    margin-left: 10px;
+}
+
+.copy-btn:hover {
+    background-color: #2d8a46;
+}
+
+/* View count badge */
+.view-count {
+    display: inline-block;
+    background-color: #1a73e8;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+
+/* Admin panel specific styles */
+.admin-controls {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.admin-controls button {
+    margin-right: 10px;
+}
+
+/* Password input styling */
+input[type="password"].form-control {
+    letter-spacing: 0.3em;
+}
+
+/* Link display box */
+.link-box {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    word-break: break-all;
+    margin: 10px 0;
+}

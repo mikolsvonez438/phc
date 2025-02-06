@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Giveaway</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Create Giveaway</h1>
+        <button onclick="createGiveaway()" class="btn">Create New Giveaway</button>
+        <div id="result"></div>
+        <!-- <p>
+            <a href="/check" class="link">Check Giveaway Status</a>
+        </p> -->
+    </div>
+
+    <script>
+        async function createGiveaway() {
+            try {
+                const response = await fetch('/api/create_giveaway', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Redirect to content creation page
+                    window.location.href = `/create_content/${data.data.id}`;
+                } else {
+                    document.getElementById('result').innerHTML = `
+                <div class="error">Error: ${data.error}</div>
+            `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+            <div class="error">Error: ${error.message}</div>
+        `;
+            }
+        }
+    </script>
+</body>
+
+</html>

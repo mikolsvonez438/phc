@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Giveaway Status</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Check Giveaway Status</h1>
+        <div class="input-group">
+            <input type="number" id="giveawayId" placeholder="Enter Giveaway ID">
+            <button onclick="checkStatus()" class="btn">Check Status</button>
+        </div>
+        <div id="result"></div>
+        <p>
+            <a href="/" class="link">Back to Create Giveaway</a>
+        </p>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            const id = document.getElementById('giveawayId').value;
+            if (!id) {
+                document.getElementById('result').innerHTML = `
+                    <div class="error">Please enter a giveaway ID</div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/check_status/${id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.data.isLive) {
+                        document.getElementById('result').innerHTML = `
+                            <div class="success">
+                                Giveaway is LIVE!<br>
+                                ID: ${data.data.id}
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('result').innerHTML = `
+                            <div class="warning">
+                                This giveaway is not live anymore.
+                            </div>
+                        `;
+                    }
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <div class="error">Error: ${data.error}</div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="error">Error: ${error.message}</div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
