@@ -1,10 +1,10 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, session
+from flask import Flask, render_template, jsonify, request
 from supabase import create_client
 import os
-from datetime import datetime
 import requests
 
-app = Flask(__name__)
+# Initialize Flask app
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.secret_key = 'secretngaeh'
 
 # Supabase configuration
@@ -24,11 +24,11 @@ def get_client_ip():
 def get_user_agent():
     return request.headers.get('User-Agent')
 
-@app.route('/', methods=['GET'])
+@app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/create_content/<int:giveaway_id>', methods=['GET'])
+@app.route('/create_content/<int:giveaway_id>')
 def create_content(giveaway_id):
     return render_template(
         'create_content.html',
@@ -36,11 +36,11 @@ def create_content(giveaway_id):
         default_admin_password=DEFAULT_ADMIN_PASSWORD
     )
 
-@app.route('/view/<int:giveaway_id>', methods=['GET'])
+@app.route('/view/<int:giveaway_id>')
 def view_giveaway(giveaway_id):
     return render_template('view_giveaway.html', giveaway_id=giveaway_id)
 
-@app.route('/admin/<int:giveaway_id>', methods=['GET'])
+@app.route('/admin/<int:giveaway_id>')
 def admin_panel(giveaway_id):
     return render_template('admin_panel.html', giveaway_id=giveaway_id)
 
