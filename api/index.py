@@ -2,49 +2,45 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, s
 from supabase import create_client
 import os
 from datetime import datetime
-from functools import wraps
-import json
 import requests
 
-app = Flask(__name__, 
-    static_folder='../static',
-    template_folder='../templates'
-)
-app.secret_key = 'secretngaeh'  # Change this to a secure secret key
+app = Flask(__name__)
+app.secret_key = 'secretngaeh'
 
 # Supabase configuration
 url = "https://btpdhndsiyodptyuodps.supabase.co"
 key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0cGRobmRzaXlvZHB0eXVvZHBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg4MDEwMjUsImV4cCI6MjA1NDM3NzAyNX0.i1NUi2DT4vnNcjbpmb_axBGeLupb97mntuF-ihdUcqs"
 supabase = create_client(url, key)
-DEFAULT_ADMIN_PASSWORD = os.getenv('DEFAULT_ADMIN_PASSWORD', 'Freemium')
+
+DEFAULT_ADMIN_PASSWORD = 'Freemium'
 
 def get_client_ip():
-    """Get client's IP address"""
-    ip = requests.get('https://httpbin.org/ip')
-    return ip.json()["origin"]
-    
+    try:
+        ip = requests.get('https://httpbin.org/ip', timeout=5)
+        return ip.json()["origin"]
+    except:
+        return request.remote_addr
 
 def get_user_agent():
-    """Get client's user agent"""
     return request.headers.get('User-Agent')
 
-@app.route('/')
-def index():
+@app.route('/', methods=['GET'])
+def home():
     return render_template('index.html')
 
-@app.route('/create_content/<int:giveaway_id>')
+@app.route('/create_content/<int:giveaway_id>', methods=['GET'])
 def create_content(giveaway_id):
     return render_template(
-        'create_content.html', 
+        'create_content.html',
         giveaway_id=giveaway_id,
         default_admin_password=DEFAULT_ADMIN_PASSWORD
     )
 
-@app.route('/view/<int:giveaway_id>')
+@app.route('/view/<int:giveaway_id>', methods=['GET'])
 def view_giveaway(giveaway_id):
     return render_template('view_giveaway.html', giveaway_id=giveaway_id)
 
-@app.route('/admin/<int:giveaway_id>')
+@app.route('/admin/<int:giveaway_id>', methods=['GET'])
 def admin_panel(giveaway_id):
     return render_template('admin_panel.html', giveaway_id=giveaway_id)
 
@@ -65,7 +61,7 @@ def save_content():
         password = request.json.get('password')
         view_limit = request.json.get('viewLimit')
         giveaway_id = request.json.get('giveawayId')
-        admin_password = request.json.get('adminPassword')  # New admin password for managing the giveaway
+        admin_password = request.json.get('adminPassword')
 
         data = supabase.table('phc_giveaway_contents').insert({
             "giveaway_id": giveaway_id,
@@ -77,7 +73,7 @@ def save_content():
         }).execute()
 
         return jsonify({
-            "success": True, 
+            "success": True,
             "data": data.data[0],
             "adminUrl": f"/admin/{giveaway_id}"
         })
@@ -91,7 +87,6 @@ def view_content(giveaway_id):
         ip_address = get_client_ip()
         user_agent = get_user_agent()
 
-        # Check if this IP has already viewed the content
         existing_view = supabase.table('phc_giveaway_viewers')\
             .select("*")\
             .eq("giveaway_id", giveaway_id)\
@@ -99,7 +94,6 @@ def view_content(giveaway_id):
             .execute()
 
         if existing_view.data:
-            # If already viewed, return content without incrementing view count
             content_data = supabase.table('phc_giveaway_contents')\
                 .select("*")\
                 .eq("giveaway_id", giveaway_id)\
@@ -122,7 +116,6 @@ def view_content(giveaway_id):
                 }
             })
 
-        # Get content and check password
         content_data = supabase.table('phc_giveaway_contents')\
             .select("*")\
             .eq("giveaway_id", giveaway_id)\
@@ -139,14 +132,12 @@ def view_content(giveaway_id):
         if content['current_views'] >= content['view_limit']:
             return jsonify({"success": False, "error": "View limit reached"})
 
-        # Record the view
         supabase.table('phc_giveaway_viewers').insert({
             "giveaway_id": giveaway_id,
             "ip_address": ip_address,
             "user_agent": user_agent
         }).execute()
 
-        # Increment view count
         supabase.table('phc_giveaway_contents')\
             .update({"current_views": content['current_views'] + 1})\
             .eq("giveaway_id", giveaway_id)\
@@ -168,7 +159,6 @@ def get_admin_stats(giveaway_id):
     try:
         admin_password = request.json.get('adminPassword')
 
-        # Verify admin password
         content_data = supabase.table('phc_giveaway_contents')\
             .select("*")\
             .eq("giveaway_id", giveaway_id)\
@@ -177,7 +167,6 @@ def get_admin_stats(giveaway_id):
         if not content_data.data or content_data.data[0]['admin_password'] != admin_password:
             return jsonify({"success": False, "error": "Invalid admin password"})
 
-        # Get viewers data
         viewers_data = supabase.table('phc_giveaway_viewers')\
             .select("*")\
             .eq("giveaway_id", giveaway_id)\
@@ -194,4 +183,3 @@ def get_admin_stats(giveaway_id):
         })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
-
