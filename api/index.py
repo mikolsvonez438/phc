@@ -20,8 +20,16 @@ DEFAULT_ADMIN_PASSWORD = os.getenv('DEFAULT_ADMIN_PASSWORD', 'Freemium')
 
 def get_client_ip():
     """Get client's IP address"""
-    ip = requests.get('https://httpbin.org/ip')
-    return ip.json()["origin"]
+    # Try to get IP from X-Forwarded-For header first (for proxied requests)
+    if request.headers.get('X-Forwarded-For'):
+        ip = request.headers.get('X-Forwarded-For').split(',')[0]
+    # Try to get IP from X-Real-IP header
+    elif request.headers.get('X-Real-IP'):
+        ip = request.headers.get('X-Real-IP')
+    # Get IP from remote address
+    else:
+        ip = request.remote_addr
+    return ip
     
 
 def get_user_agent():
